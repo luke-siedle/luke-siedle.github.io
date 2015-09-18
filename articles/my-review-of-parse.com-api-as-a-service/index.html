@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if IE 9]>         <html class="no-js lt-ie10"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<title>What is Parse.com, and what are the pros and cons of this service? - Luke Siedle - Full stack engineer</title>
+	<meta name="description" content="Parse is an amazing service for developers to get the business logic of their app up in the cloud in no time. It's also got a very generous free tier, but does it have everything we need to build apps?" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png" />
+
+			<link rel="stylesheet" href="/assets/css/compiled.css">
+	
+	<meta property="og:title" content="What is Parse.com, and what are the pros and cons of this service?" />
+	<meta property="og:type" content="article" />
+	<meta property="og:url" content="http://lukesiedle.me/articles/my-review-of-parse.com-api-as-a-service/" />
+	<meta property="og:image" content="http://lukesiedle.me/assets/img/favicon.png" />
+
+	<link rel="canonical" href="http://lukesiedle.me/articles/my-review-of-parse.com-api-as-a-service/">
+
+	<script> 
+		if( location.host == 'www.lukesiedle.me' ){
+			location.href = location.href.replace("www", "");
+		}
+	</script>
+
+	</head>
+
+<body class="">
+
+	<header>
+
+		<div class="container">
+			<nav>
+				<ul style="display:none">
+									</ul>
+			</nav>
+
+			<a href="/" title="Full stack web developer, South Africa" class="logo">
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+<path id="headphones-2-icon" d="M360.697,294.496c19.591,0,35.473,15.882,35.473,35.473v87.614
+	c0,19.591-15.882,35.473-35.473,35.473h-24.606v-158.56H360.697z M151.303,294.496c-19.591,0-35.473,15.882-35.473,35.473v87.614
+	c0,19.591,15.882,35.473,35.473,35.473h24.606v-158.56H151.303z M256,58.944c-121.56,0-206,98.146-206,222.329v96.502h35.093
+	v-96.502c0-0.206,0.007-0.41,0.007-0.617c0-108.25,85.45-162.475,170.9-162.648c85.45,0.174,170.9,54.398,170.9,162.648
+	c0,0.207,0.007,0.411,0.007,0.617v96.502H462v-96.502C462,157.09,377.56,58.944,256,58.944z"/>
+</svg>			</a>
+
+			<h1>
+				Hey, I'm
+				<span>Luke Siedle</span>
+				maker of things technical and creative.				I'm a full stack developer by day. Musician and writer by night.			</h1>
+		</div>
+
+	</header>
+	<div class="container">
+
+		<a href="/" class="go-home">← Home</a>
+		<article>
+			<h1>What is Parse.com, and what are the pros and cons of this service?</h1>
+			<time><small>11th February 2015</small></time>
+			<p>I recently had the opportunity to try out Parse.com's API for a couple of projects, 
+including our new recruitment web app <a href="http://www.flagd.com">http://www.flagd.com</a>. 
+We needed an API backend as a service solution since we wanted the option to eventually 
+create native Android/IOS versions of the app. Parse looked like the best solution 
+because they have SDKs for just about every platform, they've got a pretty solid free 
+tier, and they allow you a reasonable level of control over your code. </p>
+
+<p>But like every service, there are both pros and cons to using Parse. 
+Overall I was extremely impressed, especially with what you get on the free tier. </p>
+
+<p>Here's a breakdown/summary of what I thought was good about it, 
+and the pitfalls of using Parse for your production app. 
+It should be noted that we were using <a href="AngularJS">https://angularjs.org/</a> for these projects, 
+which proved to be a great companion for Parse, and vice versa.</p>
+
+<p>PROS</p>
+
+<ul>
+<li>Impressive free tier with 30 reqs per second, 1 million push messages</li>
+<li>SDKs for most platforms, including JavaScript, iOS, and Android.</li>
+<li>Powerful dashboard for managing data, viewing analytics, managing scheduled jobs</li>
+<li>Web server with ExpressJS, allowing you to host your app's static content.</li>
+<li>Cloud code, allowing you to add hooks and custom routes, for modifying objects before they enter the DB.</li>
+<li>MongoDB for storing your data</li>
+<li>Built in email verification and password reset</li>
+<li>Built in user object with security</li>
+<li>Built in ACL for objects</li>
+<li>Allows custom domains as well as SSL-enabled domains</li>
+<li>Handles file uploading with an elegant image module, allowing for resizing and cropping of images.</li>
+<li>Now owned by Facebook Inc., so likely to stick around for a few years</li>
+<li>Built on top of the AWS stack</li>
+<li>Built in Facebook and Twitter Oauth</li>
+<li>Backup your data anytime using export features</li>
+<li>Import data via CSV or JSON documents</li>
+<li>Fairly exhaustive documentation, along with a Stackoverflow-style Q&amp;A site.</li>
+<li>CLI tool for rapid deployment of cloud code or static assets (deploys in seconds)</li>
+</ul>
+
+<p>CONS</p>
+
+<ul>
+<li>Expensive once past the free tier (starts at $100/m)</li>
+<li>Expensive for DB data storage past the free tier ($200/20gb)</li>
+<li>Does not support NPM/node modules on their web server, meaning you can't add node modules for things like OAUTH (Google, LinkedIn, etc.). This means you do have to spend more time writing code you wouldn't normally have to write.</li>
+<li>Does not support SSL on their file system (i.e. uploaded files). Files are served from files.parsetfss.com, and there is no certificate present on this domain (at least at the time of writing this). </li>
+<li>No way to configure headers for static assets from what I can see, which meant I wasn't able to solve the cross origin problems associated with fonts. This may be possible using ExpressJS however.</li>
+<li>I've experienced occasional downtime, which usually doesn't last more than a few minutes.</li>
+<li>No easy way to separate staging/production environments apart from cloning the app, and using different credentials for each.</li>
+</ul>
+
+<h3>How I solved the critical problems I experienced</h3>
+
+<p>I had to write some custom code to handle OAuth. For uploaded files, I used Amazon S3 instead and ran all assets through Cloudfront distributions, solving the font issues. </p>
+
+<p>Since I was using Yeoman with Angular, I tweaked my Grunt configuration slightly to basically create a copy of the app for production which had a unique Parse configuration for deploying (global.json). So I can build for staging and production in a single step, and then just deploy to Parse using their CLI tool.</p>
+
+<h3>Should you use Parse.com?</h3>
+
+<p>As with most of these discussions, it all depends on what you need and how much you're willing to pay when/if you end up running the app at scale. Parse.com is definitely an awesome way to build a prototype, and not have to worry about maintaining another codebase like a Rails backend just to store some data. </p>
+
+<p><em>What are other similar options?</em>
+- Google now owns Firebase, which is a similar service but has a less potent free tier (development tier). 
+- Apple now offers its own API Backend on iCloud, called CloudKit. CloudKit is only for the Apple ecosystem.</p>
+
+<h3>What I would like to use in the future</h3>
+
+<p>I haven't ever sampled anything like this, but from a Google search, 
+<a href="http://loopback.io/">http://loopback.io</a> is an open source API as a service/NodeJS 
+platform with SDKs for Android, iOS and Angular. So you can install 
+this on your own server at low cost, and also have the benefits 
+of being able to tie up the app quickly on your various clients. 
+Maybe I'll try this next time! </p>
+
+<p>All things considered, for rapid development, prototyping, or even production, Parse.com is a pretty amazing solution. For our team at <a href="http://lab19digital.com">Lab19 Digital</a> it provides a great way to get a production-ready app up and running without worrying about configuration and scale.</p>
+		</article>
+	</div>
+
+
+<footer class="container">
+    <hr />
+    <div class="text-center text-muted">
+        <small>
+            &copy; 2015 
+            Luke Siedle. 
+            Built with <em>Berg</em>, a very lightweight PHP static site generator by Luke Siedle. Coming to Github soon!        </small>
+    </div>
+    <br />
+</footer>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="/assets/js/main.js"></script>
+
+<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+<script>
+
+    if( location.host == 'lukesiedle.me' ){
+        var trackingCode = 'UA-29717050-1';
+        (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+        e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+        e.src='//www.google-analytics.com/analytics.js';
+        r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+        
+        var pluginUrl = '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+        var _gaq = _gaq || [];
+        _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+        ga('create', trackingCode);
+        ga('require', 'linkid', 'linkid.js');
+        ga('send','pageview');
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+[{
+	"src" : [
+		"bower_components/jquery/dist/jquery.js",
+		"main.js"
+	],
+	"to" : "scripts.min.js"
+}]

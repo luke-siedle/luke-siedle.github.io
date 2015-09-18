@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if IE 9]>         <html class="no-js lt-ie10"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<title>A faster deployment workflow with git and your dev server - Luke Siedle - Full stack engineer</title>
+	<meta name="description" content="Git offers more than just source control. It's a way to automate your deployment so your team can focus on work." />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png" />
+
+			<link rel="stylesheet" href="/assets/css/compiled.css">
+	
+	<meta property="og:title" content="A faster deployment workflow with git and your dev server" />
+	<meta property="og:type" content="article" />
+	<meta property="og:url" content="http://lukesiedle.me/articles/using-git-deploys-to-speed-up-your-workflow/" />
+	<meta property="og:image" content="http://lukesiedle.me/assets/img/favicon.png" />
+
+	<link rel="canonical" href="http://lukesiedle.me/articles/using-git-deploys-to-speed-up-your-workflow/">
+
+	<script> 
+		if( location.host == 'www.lukesiedle.me' ){
+			location.href = location.href.replace("www", "");
+		}
+	</script>
+
+	</head>
+
+<body class="">
+
+	<header>
+
+		<div class="container">
+			<nav>
+				<ul style="display:none">
+									</ul>
+			</nav>
+
+			<a href="/" title="Full stack web developer, South Africa" class="logo">
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+<path id="headphones-2-icon" d="M360.697,294.496c19.591,0,35.473,15.882,35.473,35.473v87.614
+	c0,19.591-15.882,35.473-35.473,35.473h-24.606v-158.56H360.697z M151.303,294.496c-19.591,0-35.473,15.882-35.473,35.473v87.614
+	c0,19.591,15.882,35.473,35.473,35.473h24.606v-158.56H151.303z M256,58.944c-121.56,0-206,98.146-206,222.329v96.502h35.093
+	v-96.502c0-0.206,0.007-0.41,0.007-0.617c0-108.25,85.45-162.475,170.9-162.648c85.45,0.174,170.9,54.398,170.9,162.648
+	c0,0.207,0.007,0.411,0.007,0.617v96.502H462v-96.502C462,157.09,377.56,58.944,256,58.944z"/>
+</svg>			</a>
+
+			<h1>
+				Hey, I'm
+				<span>Luke Siedle</span>
+				maker of things technical and creative.				I'm a full stack developer by day. Musician and writer by night.			</h1>
+		</div>
+
+	</header>
+	<div class="container">
+
+		<a href="/" class="go-home">← Home</a>
+		<article>
+			<h1>A faster deployment workflow with git and your dev server</h1>
+			<time><small>16th August 2015</small></time>
+			<p>Like everybody, I'm pretty tired of deploying websites via FTP. In many cases, the client doesn't have root access to their server
+since they're on a shared host, so your hands are tied anyway, and the best you can do is upload a zip file. 
+You can however stage the site on your own servers until you're ready for production. If you've got root 
+access to your stage, you can create a git deployment method that will allow 
+you to focus on the work only, and worry about deployment only at the very end of your project. </p>
+
+<h3>Create a webhook</h3>
+
+<p>The first thing you need is a web hook, an endpoint that Bitbucket or Github can request when they receive a git push.
+Bitbucket recently changed how their web hooks work and the payload that gets sent along with them.</p>
+
+<p>You need an event on repository push, which is a default they provide in the webhooks section of your repo settings.</p>
+
+<p><code><a href="https://confluence.atlassian.com/display/BITBUCKET/Manage+Webhooks" target="_blank">https://confluence.atlassian.com/display/BITBUCKET/Manage+Webhooks</a></code></p>
+
+<p>Your webhook will be hosted on your stage, so you need a link like, www.mydevserver.com/webhook.php. 
+This PHP file will be reading in the payload sent along by Bitbucket, and perform the necessary actions
+to get pull your latest repository. </p>
+
+<p>Now each time you push, this request will be sent to that URL. Right now, there's nothing there. 
+So you need to create the file and the script that will handle the workflow. </p>
+
+<h3>Create a PHP (or other) script for the webhook</h3>
+
+<p>You need to read in PHP input and decode from JSON: <code>$payload = json&#95;decode( file&#95;get_contents('php://input'));</code>. Inspect the object for the information you need. 
+Basically you're just looking for the repo URL/name and the commit message. The reason we want the commit message
+is, it's useful to be able to send commands inside the message. These are already used inside Bitbucket for certain
+actions, for example, "Fixes #2", would resolve the issue numbered #2.</p>
+
+<p>You will probably access the repo name and message from the object as follows: </p>
+
+<p><code>$payload->repository->name;</code><br />
+<code>$payload->push->changes[0]->new->target->message;</code></p>
+
+<h3>Create a binary wrapper</h3>
+
+<p>Once you've got this info, I found it easiest to pass this into a binary wrapper script that can execute as root. 
+I just came up against a lot of permissions issues, so this was the quickest way to get things working. In PHP 
+you would run <code>shell_exec("./wrapper arg1 arg2 arg3 etc")</code>. You can learn how to create this script here:</p>
+
+<p><code><a href="http://stackoverflow.com/a/8532448/558287" target="_blank">http://stackoverflow.com/a/8532448/558287</a></code></p>
+
+<p>So you can pass a set of arguments to your wrapper, which will in turn execute a shell script as root. This gives 
+your shell script unlimited power, so be careful about what the script does. 
+You can interface with any software you've got installed on your server. Right now my deployment script does this, 
+(which is all I really need for now):</p>
+
+<ol>
+<li>Pull the latest changes from Bitbucket</li>
+<li>Copy these changes to the working directory (staging)</li>
+<li>Automatically create a MySQL DB equal to the name of the repo</li>
+<li>If you find the words "UPDATE_DB" in the commit msg,
+automatically update the database if you can find a file called "latest.sql" in the root. </li>
+</ol>
+
+<p>Now every time I want the site to be updated 100% (for example, a Wordpress site I'm staging), I just have 
+to run the following (after dumping to latest.sql)<code>git add . &amp;&amp; git commit -m "Latest changes UPDATE_DB"</code>.
+In a few seconds, the stage is synced, and I can now show the client my progress. Good times.</p>
+
+<p>There's a bit more to all this than I've shared, for example, you need to have git installed on your server, 
+and ensure you have SSH keys installed to your root user that allow you to access your Bitbucket/Github repo.
+You should also try and SSH to Bitbucket at least once from your server. I'll let you Google all that. </p>
+
+<h3>What else is possible?</h3>
+
+<p>You could do some awesome stuff with git, for example, automatically run integration tests each deploy to ensure your 
+build is functional, or you could link to your project management tool to report each deployment/build success, along
+with the commit message.  You could also stage all the branches of your project separately, if for example, different
+team members are working on different areas of the project. So it's really worth spending the time setting 
+this up. It'll save you countless hours in the future.</p>
+
+<p>Want to work with me and the team? Check us out <a href="http://lab19digital.com" target="_blank">http://lab19digital.com</a>.</p>
+		</article>
+	</div>
+
+
+<footer class="container">
+    <hr />
+    <div class="text-center text-muted">
+        <small>
+            &copy; 2015 
+            Luke Siedle. 
+            Built with <em>Berg</em>, a very lightweight PHP static site generator by Luke Siedle. Coming to Github soon!        </small>
+    </div>
+    <br />
+</footer>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="/assets/js/main.js"></script>
+
+<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+<script>
+
+    if( location.host == 'lukesiedle.me' ){
+        var trackingCode = 'UA-29717050-1';
+        (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+        e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+        e.src='//www.google-analytics.com/analytics.js';
+        r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+        
+        var pluginUrl = '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+        var _gaq = _gaq || [];
+        _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+        ga('create', trackingCode);
+        ga('require', 'linkid', 'linkid.js');
+        ga('send','pageview');
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+[{
+	"src" : [
+		"compiled.css"
+	],
+	"to" : "styles.min.css"
+}]
